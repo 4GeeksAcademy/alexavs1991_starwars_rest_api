@@ -1,141 +1,175 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
 class User(db.Model):
-    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    email = db.Column(db.String(250), nullable=False)
-    favorites = db.relationship("Favorites", backref="user")
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r' % self.username
-    
+        return '<User %r>' % self.id
+
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "email": self.email,
+   
         }
 
-class People(db.Model):
-    __tablename__ = 'people'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    url = db.Column(db.String(250), nullable=False)
-    height = db.Column(db.Integer)
-    mass = db.Column(db.Integer)
-    hair_color = db.Column(db.String(50))
-    skin_color = db.Column(db.String(50))
-    eye_color = db.Column(db.String(50))
-    birth_year = db.Column(db.String(50))
-    gender = db.Column(db.String(50))
-    favorites = db.relationship("Favorites", backref="people")
+class Usuario(db.Model):
 
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), unique=False, nullable=False)
+    apellido = db.Column(db.String(120), unique=False, nullable=False)
+    email  = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    usuario_favoritos = relationship('Favorito', backref='usuario', lazy=True)
+
+    def __repr__(self):
+        return '<Usuario %r>' % self.id
 
     def serialize(self):
-        return{
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "email": self.email,
+            "password": self.password,
+            "usuario_favoritos": list(map(lambda item: item.serialize(),self.usuario_favoritos))
             
-            'id': self.id,
-            'name': self.name,
-            'url': self.url,
-            'height': self.height,
-            'mass': self.mass,
-            'hair_color': self.hair_color,
-            'skin_color': self.skin_color,
-            'eye_color': self.eye_color,
-            'birth_year': self.birth_year,
-            'gender': self.gender,
-            'favorites': [favorite.serialize() for favorite in self.favorites]
-
         }
 
 
+class Personajes(db.Model):
 
-class Planet(db.Model):
-    __tablename__ = 'planets'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    url = db.Column(db.String(250), nullable=False)
-    diameter = db.Column(db.Integer)
-    rotation_period = db.Column(db.Integer)
-    manufacturer = db.Column(db.String(45))
-    orbital_period = db.Column(db.Integer)
-    length = db.Column(db.Float)
-    gravity = db.Column(db.Integer)
-    population = db.Column(db.Integer)
-    climate = db.Column(db.String(50))
-    terrain = db.Column(db.String(50))
-    surface_water = db.Column(db.Integer)
-    favorites = db.relationship("Favorites", backref="planets")
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    mass = db.Column(db.String(120), unique=False, nullable=False)
+    hair_color = db.Column(db.String(120), unique=False, nullable=False)
+    skin_color = db.Column(db.String(120), unique=False, nullable=False)
+    eye_color = db.Column(db.String(120), unique=False, nullable=False)
+    birth_year = db.Column(db.String(120), unique=False, nullable=False)
+    gender = db.Column(db.String(120), unique=False, nullable=False)
+    height = db.Column(db.String(120), unique=False, nullable=False)
 
-def serialize(self):
-        return {
-             'id': self.id,
-            'name': self.name,
-            'url': self.url,
-            'diameter': self.diameter,
-            'rotation_period': self.rotation_period,
-            'manufacturer': self.manufacturer,
-            'orbital_period': self.orbital_period,
-            'length': self.length,
-            'gravity': self.gravity,
-            'population': self.population,
-            'climate': self.climate,
-            'terrain': self.terrain,
-            'surface_water': self.surface_water
-        }
-
-
-
-
-class Vehicles(db.Model):
-    __tablename__ = 'vehicles'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(300), nullable=False)
-    url = db.Column(db.String(300), nullable=False)
-    model = db.Column(db.String(50))
-    vehicle_class = db.Column(db.String(45))
-    manufacturer = db.Column(db.String(50))
-    cost_in_credits = db.Column(db.Integer)
-    length = db.Column(db.Float)
-    crew = db.Column(db.Integer)
-    max_atmosphering_speed = db.Column(db.Integer)
-    cargo_capacity = db.Column(db.Integer)
-    consumables = db.Column(db.String(50))
-    favorites = db.relationship("Favorites", backref="vehicles")
-
+    def __repr__(self):
+        return '<Personajes %r>' % self.id
 
     def serialize(self):
         return {
-            'id': self.id,
-            'name': self.name,
-            'url': self.url,
-            'model': self.model,
-            'vehicle_class': self.vehicle_class,
-            'manufacturer': self.manufacturer,
-            'cost_in_credits': self.cost_in_credits,
-            'length': self.length,
-            'crew': self.crew,
-            'max_atmosphering_speed': self.max_atmosphering_speed,
-            'cargo_capacity': self.cargo_capacity,
-            'consumables': self.consumables
+            "id" : self.id,
+            "name" : self.name,
+            "mass" : self.mass,
+            "hair_color" : self.hair_color,
+            "skin_color" : self.skin_color,
+            "eye_color" : self.eye_color,
+            "birth_year" : self.birth_year,
+            "gender" : self.gender,
+            "height" : self.height
+            
         }
 
 
-class Favorites(db.Model):
-    __tablename__ = 'favorites'
+class Planetas(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
-    people_id = db.Column(db.Integer, db.ForeignKey('people.id'))
-    vehicles_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'))
-    planets_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    diameter = db.Column(db.String(120), unique=False, nullable=False)
+    rotation_period = db.Column(db.String(120), unique=False, nullable=False)
+    orbital_period = db.Column(db.String(120), unique=False, nullable=False)
+    gravity = db.Column(db.String(120), unique=False, nullable=False)
+    population = db.Column(db.String(120), unique=False, nullable=False)
+    climate = db.Column(db.String(120), unique=False, nullable=False)
+    terrain = db.Column(db.String(120), unique=False, nullable=False)
+    surface_water = db.Column(db.String(120), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Planetas %r>' % self.id
 
     def serialize(self):
         return {
-            'id': self.id,
-            'people_id': self.people_id,
-            'vehicles_id': self.vehicles_id,
-            'planets_id': self.planets_id,
-            'user_id': self.user_id
+            "id": self.id,
+            "name": self.name,
+            "diameter": self.diameter,
+            "rotation_period": self.rotation_period,
+            "orbital_period": self.orbital_period,
+            "gravity": self.gravity,
+            "population": self.population,
+            "climate": self.climate,
+            "terrain": self.terrain,
+            "surface_water": self.surface_water
+           
+        }
+
+
+class Vehiculos(db.Model):
+  
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    model = db.Column(db.String(120), unique=True, nullable=False)
+    vehicle_class = db.Column(db.String(120), unique=False, nullable=False)
+    manufacturer = db.Column(db.String(120), unique=False, nullable=False)
+    cost_in_credits = db.Column(db.String(120), unique=False, nullable=False)
+    length = db.Column(db.String(120), unique=False, nullable=False)
+    crew = db.Column(db.String(120), unique=False, nullable=False)
+    passengers = db.Column(db.String(120), unique=False, nullable=False)
+    max_atmosphering_speed = db.Column(db.String(120), unique=False, nullable=False)
+    cargo_capacity = db.Column(db.String(120), unique=False, nullable=False)
+    consumables = db.Column(db.String(120), unique=False, nullable=False)
+    films = db.Column(db.String(120), unique=False, nullable=False)
+    pilots = db.Column(db.String(120), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Vehiculos %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id" : self.id,
+            "name" : self.name,
+            "model" : self.model,
+            "vehicle_class" : self.vehicle_class,
+            "manufacturer" : self.manufacturer,
+            "cost_in_credits" : self.cost_in_credits,
+            "length" : self.length,
+            "crew" : self.crew,
+            "passengers" : self.passengers,
+            "max_atmosphering_speed" : self.max_atmosphering_speed,
+            "cargo_capacity" : self.cargo_capacity,
+            "consumables" : self.consumables,
+            "films" : self.films,
+            "pilots" : self.pilots,
+          
+        }
+
+
+class Favorito(db.Model):
+   
+    id = db.Column(db.Integer, primary_key=True)
+
+    usuario_id = Column(Integer, ForeignKey('usuario.id'))
+
+    personajes_id = Column(Integer, ForeignKey('personajes.id'))
+    personajes = relationship(Personajes)
+
+    vehiculos_id = Column(Integer, ForeignKey('vehiculos.id'))
+    vehiculos = relationship(Vehiculos)
+
+    planetas_id = Column(Integer, ForeignKey('planetas.id'))
+    planetas = relationship(Planetas)
+
+    def __repr__(self):
+        return '<Favorito %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "usuario_id": self.usuario_id,
+            "personaje": None if self.personajes is None else self.personajes.serialize(),
+            "vehiculo": None if self.vehiculos is None else self.vehiculos.serialize(),
+            "planeta": None if self.planetas is None else self.planetas.serialize(),
+
         }
